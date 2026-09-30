@@ -5,11 +5,9 @@
     "dev": "live-server",
     "server": "node backend/server.js"
   },
-  "devDependencies": {
-    "live-server": "^1.2.2"
-  },
   "dependencies": {
     "express": "^4.21.0",
-    "cors": "^2.8.5"
+    "cors": "^2.8.5",
+    "pg": "^8.11.0"
   }
 }
