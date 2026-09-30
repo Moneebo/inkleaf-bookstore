@@ -1,0 +1,1637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inkleaf Books — Online Book Store</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,500;1,6..72,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script type="module">
+  import { initApp } from './js/app.js';
+  initApp();
+</script>
+<style>
+  :root{
+    --ink:#1B2B22;
+    --ink-soft:#2E4234;
+    --paper:#EFEAE0;
+    --paper-light:#FBF8F2;
+    --brass:#B8863B;
+    --brass-dark:#96692A;
+    --maroon:#7A2E2E;
+    --text:#2A2620;
+    --text-muted:#6B6558;
+    --line:#DDD5C4;
+    --success:#4F7942;
+    --danger:#A23E3E;
+    --white:#FFFFFF;
+    --cat-fiction:#B8863B;
+    --cat-nonfiction:#2E4234;
+    --cat-academic:#3B5166;
+    --cat-children:#B4656F;
+    --cat-comics:#2F7A6B;
+    --cat-selfhelp:#7A2E2E;
+    --cat-mystery:#4B3358;
+    --cat-biography:#7C7233;
+    --radius:7px;
+    --shadow:0 1px 2px rgba(27,43,34,0.06), 0 4px 14px rgba(27,43,34,0.08);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0; background:var(--paper); color:var(--text);
+    font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+    font-size:15px; line-height:1.55; -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,h4{
+    font-family:'Newsreader',Georgia,serif; color:var(--ink); margin:0 0 .4em;
+    font-weight:600; letter-spacing:-0.01em;
+  }
+  a{color:inherit;}
+  button{font-family:inherit; cursor:pointer;}
+  input,select,textarea{font-family:inherit; font-size:.95rem;}
+  img{max-width:100%; display:block;}
+  :focus-visible{outline:2px solid var(--brass); outline-offset:2px;}
+  .container{max-width:1180px; margin:0 auto; padding:0 24px;}
+  .visually-hidden{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0);}
+
+  /* ---------- Buttons ---------- */
+  .btn{
+    display:inline-flex; align-items:center; justify-content:center; gap:8px;
+    padding:11px 20px; border-radius:var(--radius); border:1px solid transparent;
+    font-size:.92rem; font-weight:600; transition:background .15s, color .15s, border-color .15s;
+  }
+  .btn-primary{background:var(--brass); color:var(--white);}
+  .btn-primary:hover{background:var(--brass-dark);}
+  .btn-primary:disabled{background:#C9B48B; cursor:not-allowed;}
+  .btn-dark{background:var(--ink); color:var(--paper-light);}
+  .btn-dark:hover{background:var(--ink-soft);}
+  .btn-ghost{background:transparent; color:var(--ink); border-color:var(--line);}
+  .btn-ghost:hover{border-color:var(--ink);}
+  .btn-danger{background:transparent; color:var(--danger); border-color:var(--danger);}
+  .btn-danger:hover{background:var(--danger); color:var(--white);}
+  .btn-sm{padding:7px 13px; font-size:.82rem;}
+  .btn-block{width:100%;}
+  .link-btn{background:none; border:none; color:var(--brass-dark); font-weight:600; padding:0; font-size:.9rem;}
+  .link-btn:hover{text-decoration:underline;}
+
+  /* ---------- Header ---------- */
+  header.site{
+    position:sticky; top:0; z-index:40; background:var(--ink); color:var(--paper-light);
+    border-bottom:1px solid rgba(255,255,255,.08);
+  }
+  .nav-row{display:flex; align-items:center; gap:22px; height:68px;}
+  .brand{display:flex; align-items:center; gap:10px; font-family:'Newsreader',serif; font-size:1.35rem; font-style:italic; color:var(--paper-light); flex-shrink:0;}
+  .brand svg{flex-shrink:0;}
+  nav.main-nav{display:flex; gap:20px; flex-shrink:0;}
+  nav.main-nav button{
+    background:none; border:none; color:rgba(251,248,242,.82); font-size:.92rem; font-weight:500;
+    padding:6px 2px; border-bottom:2px solid transparent;
+  }
+  nav.main-nav button:hover, nav.main-nav button.active{color:var(--paper-light); border-color:var(--brass);}
+  .search-wrap{flex:1; max-width:380px; position:relative;}
+  .search-wrap input{
+    width:100%; padding:9px 14px 9px 36px; border-radius:20px; border:1px solid rgba(255,255,255,.16);
+    background:rgba(255,255,255,.08); color:var(--paper-light); font-size:.88rem;
+  }
+  .search-wrap input::placeholder{color:rgba(251,248,242,.5);}
+  .search-wrap svg{position:absolute; left:12px; top:50%; transform:translateY(-50%); opacity:.6;}
+  .nav-actions{display:flex; align-items:center; gap:14px; margin-left:auto; flex-shrink:0;}
+  .icon-btn{position:relative; background:none; border:none; color:var(--paper-light); padding:6px; display:flex;}
+  .badge-count{
+    position:absolute; top:-3px; right:-5px; background:var(--brass); color:var(--white);
+    font-size:.68rem; font-weight:700; border-radius:50%; min-width:17px; height:17px;
+    display:flex; align-items:center; justify-content:center; padding:0 3px;
+  }
+  .account-menu{position:relative;}
+  .account-trigger{background:none; border:1px solid rgba(255,255,255,.2); border-radius:20px; color:var(--paper-light); padding:6px 14px 6px 8px; display:flex; align-items:center; gap:8px; font-size:.85rem;}
+  .avatar-dot{width:24px; height:24px; border-radius:50%; background:var(--brass); color:var(--white); display:flex; align-items:center; justify-content:center; font-size:.72rem; font-weight:700;}
+  .dropdown{
+    position:absolute; right:0; top:calc(100% + 8px); background:var(--paper-light); color:var(--text);
+    border-radius:var(--radius); box-shadow:var(--shadow); min-width:190px; padding:6px; display:none; border:1px solid var(--line);
+  }
+  .dropdown.open{display:block;}
+  .dropdown button{display:block; width:100%; text-align:left; background:none; border:none; padding:9px 12px; border-radius:5px; font-size:.88rem;}
+  .dropdown button:hover{background:var(--paper);}
+  .role-pill{font-size:.68rem; font-weight:700; color:var(--text-muted); text-transform:lowercase; padding:2px 0 6px 12px;}
+  .hamburger{display:none; background:none; border:none; color:var(--paper-light);}
+  .mobile-nav{display:none; flex-direction:column; padding:10px 24px 16px; gap:2px; background:var(--ink-soft);}
+  .mobile-nav.open{display:flex;}
+  .mobile-nav button{text-align:left; background:none; border:none; color:var(--paper-light); padding:10px 4px; font-size:.95rem; border-bottom:1px solid rgba(255,255,255,.08);}
+
+  /* ---------- Views ---------- */
+  main{min-height:60vh;}
+  .view{display:none; padding:36px 0 64px;}
+  .view.active{display:block;}
+  .view-head{display:flex; align-items:baseline; justify-content:space-between; margin-bottom:20px; gap:12px; flex-wrap:wrap;}
+  .view-head h2{font-size:1.5rem;}
+  .muted{color:var(--text-muted);}
+  .small{font-size:.82rem;}
+
+  /* ---------- Home hero ---------- */
+  .hero{display:grid; grid-template-columns:1fr 1fr; gap:48px; align-items:center; padding:44px 0 56px;}
+  .hero h1{font-size:2.5rem; line-height:1.18; margin-bottom:16px;}
+  .hero p.lede{font-size:1.05rem; color:var(--text-muted); max-width:46ch; margin-bottom:26px;}
+  .hero-actions{display:flex; gap:12px;}
+  .spread{position:relative; height:300px;}
+  .fan-cover{
+    position:absolute; width:150px; height:210px; border-radius:3px 8px 8px 3px; box-shadow:var(--shadow);
+    display:flex; flex-direction:column; justify-content:flex-end; padding:16px 14px; color:#fff;
+  }
+  .fan-cover::before{content:''; position:absolute; left:0; top:0; bottom:0; width:7px; background:rgba(0,0,0,.22); border-radius:3px 0 0 3px;}
+  .fan-cover .t{font-family:'Newsreader',serif; font-weight:600; font-size:.98rem; line-height:1.25;}
+  .fan-cover .a{font-size:.72rem; opacity:.85; margin-top:4px;}
+  .value-row{display:grid; grid-template-columns:repeat(3,1fr); gap:24px; padding:34px 0; border-top:1px solid var(--line); border-bottom:1px solid var(--line); margin-bottom:48px;}
+  .value-item h4{font-size:.98rem; margin-bottom:4px;}
+  .value-item p{margin:0; font-size:.86rem; color:var(--text-muted);}
+
+  .shelf-row{display:flex; gap:10px; overflow-x:auto; padding-bottom:6px; margin-bottom:48px;}
+  .shelf-tag{
+    flex-shrink:0; padding:9px 18px; border-radius:20px; font-size:.85rem; font-weight:600; color:#fff; border:none;
+  }
+  .shelf-tag.is-all{background:var(--ink); }
+
+  .section-head{display:flex; align-items:baseline; justify-content:space-between; margin-bottom:16px;}
+  .section-head h3{font-size:1.2rem;}
+  .book-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(190px,1fr)); gap:22px; margin-bottom:52px;}
+
+  /* ---------- Book card / generated cover ---------- */
+  .book-card{cursor:pointer;}
+  .book-cover{
+    position:relative; height:210px; border-radius:3px 8px 8px 3px; box-shadow:var(--shadow);
+    display:flex; flex-direction:column; justify-content:flex-end; padding:14px; color:#fff; overflow:hidden;
+  }
+  .book-cover::before{content:''; position:absolute; left:0; top:0; bottom:0; width:7px; background:rgba(0,0,0,.24);}
+  .book-cover::after{content:''; position:absolute; inset:0; background:linear-gradient(180deg, rgba(0,0,0,0) 40%, rgba(0,0,0,.35) 100%);}
+  .book-cover .t, .book-cover .a{position:relative; z-index:1;}
+  .book-cover .t{font-family:'Newsreader',serif; font-weight:600; font-size:.96rem; line-height:1.22;}
+  .book-cover .a{font-size:.72rem; opacity:.88; margin-top:3px;}
+  .cover-ribbon{position:absolute; top:10px; right:-28px; background:var(--maroon); color:#fff; font-size:.62rem; font-weight:700; padding:3px 32px; transform:rotate(35deg); z-index:2;}
+  .book-meta{padding-top:10px;}
+  .book-meta .cat{font-size:.72rem; color:var(--text-muted); margin-bottom:2px;}
+  .book-meta .name{font-size:.92rem; font-weight:600; color:var(--ink); line-height:1.3;}
+  .book-meta .row{display:flex; justify-content:space-between; align-items:center; margin-top:6px;}
+  .price{font-weight:700; color:var(--ink);}
+  .rating{font-size:.78rem; color:var(--brass-dark); display:flex; align-items:center; gap:3px;}
+  .stock-low{color:var(--danger); font-size:.72rem; font-weight:600;}
+
+  /* ---------- Shop ---------- */
+  .shop-layout{display:grid; grid-template-columns:220px 1fr; gap:32px; align-items:start;}
+  .filters{border:1px solid var(--line); border-radius:var(--radius); padding:18px; position:sticky; top:88px;}
+  .filters h4{font-size:.85rem; margin-bottom:10px; padding-bottom:8px; border-bottom:1px solid var(--line);}
+  .filter-group{margin-bottom:18px;}
+  .filter-opt{display:flex; align-items:center; gap:8px; font-size:.86rem; margin-bottom:7px; color:var(--text);}
+  .filter-opt input{accent-color:var(--brass);}
+  .range-row{display:flex; gap:8px; align-items:center;}
+  .range-row input{width:70px; padding:6px 8px; border:1px solid var(--line); border-radius:5px;}
+  select.sort-select{padding:8px 12px; border:1px solid var(--line); border-radius:5px; background:var(--white);}
+  .mobile-filter-toggle{display:none;}
+
+  /* ---------- Product detail ---------- */
+  .product-layout{display:grid; grid-template-columns:320px 1fr; gap:44px;}
+  .product-cover{height:420px; border-radius:4px 12px 12px 4px;}
+  .product-cover .t{font-size:1.5rem;}
+  .product-cover .a{font-size:.95rem;}
+  .qty-stepper{display:flex; align-items:center; border:1px solid var(--line); border-radius:6px; width:fit-content;}
+  .qty-stepper button{background:none; border:none; width:34px; height:36px; font-size:1rem;}
+  .qty-stepper span{width:34px; text-align:center; font-weight:600;}
+  .tag-chip{display:inline-block; background:var(--paper); border:1px solid var(--line); border-radius:20px; padding:3px 12px; font-size:.76rem; margin:0 6px 6px 0; color:var(--text-muted);}
+
+  /* ---------- Cart / Checkout ---------- */
+  .cart-layout{display:grid; grid-template-columns:1fr 300px; gap:36px; align-items:start;}
+  .cart-line{display:grid; grid-template-columns:64px 1fr auto auto; gap:16px; align-items:center; padding:16px 0; border-bottom:1px solid var(--line);}
+  .cart-line .mini-cover{width:64px; height:88px; border-radius:2px 6px 6px 2px;}
+  .summary-card{border:1px solid var(--line); border-radius:var(--radius); padding:22px; position:sticky; top:88px;}
+  .summary-row{display:flex; justify-content:space-between; font-size:.9rem; margin-bottom:10px; color:var(--text-muted);}
+  .summary-row.total{color:var(--ink); font-weight:700; font-size:1.05rem; border-top:1px solid var(--line); padding-top:12px; margin-top:4px;}
+  .empty-state{text-align:center; padding:60px 20px; color:var(--text-muted);}
+
+  .steps{display:flex; gap:0; margin-bottom:32px; max-width:520px;}
+  .step{flex:1; text-align:center; position:relative; font-size:.82rem; color:var(--text-muted);}
+  .step .dot{width:28px; height:28px; border-radius:50%; background:var(--paper); border:1px solid var(--line); display:flex; align-items:center; justify-content:center; margin:0 auto 6px; font-weight:700; font-size:.8rem;}
+  .step.active .dot, .step.done .dot{background:var(--ink); color:#fff; border-color:var(--ink);}
+  .step::after{content:''; position:absolute; top:14px; left:calc(50% + 20px); right:calc(-50% + 20px); height:1px; background:var(--line);}
+  .step:last-child::after{display:none;}
+  .form-grid{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+  .field{margin-bottom:14px;}
+  .field label{display:block; font-size:.82rem; color:var(--text-muted); margin-bottom:5px;}
+  .field input, .field select, .field textarea{width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:6px; background:var(--white); color:var(--text);}
+  .field textarea{resize:vertical; min-height:80px;}
+  .pay-methods{display:flex; gap:10px; margin-bottom:18px; flex-wrap:wrap;}
+  .pay-method{padding:9px 16px; border:1px solid var(--line); border-radius:6px; background:var(--white); font-size:.88rem; font-weight:600;}
+  .pay-method.selected{border-color:var(--brass); background:#FBF3E4; color:var(--brass-dark);}
+
+  /* ---------- Orders / Profile ---------- */
+  table.data-table{width:100%; border-collapse:collapse; font-size:.88rem;}
+  table.data-table th{text-align:left; padding:10px 12px; color:var(--text-muted); font-weight:600; border-bottom:1px solid var(--line); font-size:.78rem;}
+  table.data-table td{padding:12px; border-bottom:1px solid var(--line); vertical-align:middle;}
+  .status-pill{padding:3px 10px; border-radius:20px; font-size:.72rem; font-weight:700; display:inline-block;}
+  .status-Placed{background:#EAE3F4; color:#4B3358;}
+  .status-Shipped{background:#DDEAF2; color:#2C5675;}
+  .status-Delivered{background:#E1EEDD; color:#3D5F35;}
+  .status-Cancelled{background:#F4DEDE; color:#8A3A3A;}
+
+  /* ---------- Admin ---------- */
+  .admin-layout{display:grid; grid-template-columns:190px 1fr; gap:32px;}
+  .admin-nav{display:flex; flex-direction:column; gap:2px;}
+  .admin-nav button{text-align:left; background:none; border:none; padding:10px 14px; border-radius:6px; font-size:.9rem; color:var(--text);}
+  .admin-nav button:hover{background:var(--paper-light);}
+  .admin-nav button.active{background:var(--ink); color:#fff;}
+  .stat-row{display:flex; gap:0; margin-bottom:30px; border:1px solid var(--line); border-radius:var(--radius); overflow:hidden;}
+  .stat{flex:1; padding:18px 22px; border-right:1px solid var(--line);}
+  .stat:last-child{border-right:none;}
+  .stat .num{font-family:'Newsreader',serif; font-size:1.6rem; color:var(--ink); font-weight:600;}
+  .stat .lbl{font-size:.78rem; color:var(--text-muted); margin-top:2px;}
+  .chart-grid{display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-bottom:32px;}
+  .chart-card{border:1px solid var(--line); border-radius:var(--radius); padding:20px;}
+  .chart-card h4{font-size:.92rem; margin-bottom:14px;}
+  .admin-toolbar{display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; gap:12px; flex-wrap:wrap;}
+  .low-stock{color:var(--danger); font-weight:700;}
+  .icon-action{background:none; border:none; padding:5px; color:var(--text-muted); border-radius:4px;}
+  .icon-action:hover{color:var(--ink); background:var(--paper);}
+
+  /* ---------- Modals ---------- */
+  .overlay{position:fixed; inset:0; background:rgba(27,20,15,.5); display:none; align-items:center; justify-content:center; z-index:100; padding:20px;}
+  .overlay.open{display:flex;}
+  .modal-box{background:var(--paper-light); border-radius:10px; max-width:460px; width:100%; padding:28px; max-height:88vh; overflow-y:auto; position:relative;}
+  .modal-box.wide{max-width:640px;}
+  .modal-close{position:absolute; top:14px; right:14px; background:none; border:none; color:var(--text-muted);}
+  .auth-tabs{display:flex; gap:20px; margin-bottom:20px; border-bottom:1px solid var(--line);}
+  .auth-tabs button{background:none; border:none; padding:8px 2px 12px; font-weight:600; color:var(--text-muted); border-bottom:2px solid transparent;}
+  .auth-tabs button.active{color:var(--ink); border-color:var(--brass);}
+  .auth-panel{display:none;}
+  .auth-panel.active{display:block;}
+  .demo-hint{background:var(--paper); border-radius:6px; padding:10px 12px; font-size:.78rem; color:var(--text-muted); margin-top:16px;}
+  .sandbox-badge{display:inline-flex; align-items:center; gap:6px; background:#FBF3E4; color:var(--brass-dark); font-size:.72rem; font-weight:700; padding:4px 10px; border-radius:20px; margin-bottom:16px;}
+  .card-input-row{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+
+  /* ---------- Invoice ---------- */
+  .invoice{font-size:.88rem;}
+  .invoice-head{display:flex; justify-content:space-between; margin-bottom:20px; padding-bottom:16px; border-bottom:2px solid var(--ink);}
+  .invoice-meta{text-align:right;}
+  .invoice-parties{display:flex; justify-content:space-between; margin-bottom:18px; gap:20px;}
+  table.invoice-table{width:100%; border-collapse:collapse; margin-bottom:16px;}
+  table.invoice-table th{text-align:left; font-size:.76rem; color:var(--text-muted); padding:6px 4px; border-bottom:1px solid var(--line);}
+  table.invoice-table td{padding:8px 4px; border-bottom:1px solid var(--line);}
+  .invoice-totals{max-width:240px; margin-left:auto;}
+  .invoice-totals div{display:flex; justify-content:space-between; font-size:.86rem; margin-bottom:6px;}
+  .invoice-total-row{font-weight:700; font-size:1rem; border-top:1px solid var(--ink); padding-top:8px;}
+
+  /* ---------- Toasts ---------- */
+  .toast-stack{position:fixed; top:82px; right:20px; z-index:200; display:flex; flex-direction:column; gap:10px; max-width:300px;}
+  .toast{background:var(--ink); color:var(--paper-light); padding:12px 16px; border-radius:7px; font-size:.85rem; box-shadow:var(--shadow); border-left:3px solid var(--brass);}
+  .toast.success{border-left-color:var(--success);}
+  .toast.error{border-left-color:var(--danger);}
+
+  /* ---------- Chat widget ---------- */
+  .chat-fab{position:fixed; bottom:24px; right:24px; width:56px; height:56px; border-radius:50%; background:var(--ink); color:var(--brass); border:none; box-shadow:var(--shadow); z-index:90; display:flex; align-items:center; justify-content:center;}
+  .chat-panel{position:fixed; bottom:92px; right:24px; width:320px; max-height:440px; background:var(--paper-light); border-radius:10px; box-shadow:var(--shadow); z-index:91; display:none; flex-direction:column; overflow:hidden; border:1px solid var(--line);}
+  .chat-panel.open{display:flex;}
+  .chat-head{background:var(--ink); color:var(--paper-light); padding:14px 16px; font-family:'Newsreader',serif; font-style:italic; font-size:1.05rem;}
+  .chat-head span{display:block; font-family:'Inter',sans-serif; font-style:normal; font-size:.72rem; color:rgba(251,248,242,.65); margin-top:2px;}
+  .chat-body{flex:1; overflow-y:auto; padding:14px; display:flex; flex-direction:column; gap:10px; min-height:200px;}
+  .chat-msg{max-width:82%; padding:9px 12px; border-radius:10px; font-size:.85rem; line-height:1.4;}
+  .chat-msg.bot{background:var(--paper); align-self:flex-start; border-bottom-left-radius:2px;}
+  .chat-msg.user{background:var(--ink); color:var(--paper-light); align-self:flex-end; border-bottom-right-radius:2px;}
+  .chat-input-row{display:flex; border-top:1px solid var(--line); padding:8px;}
+  .chat-input-row input{flex:1; border:none; padding:8px; background:none;}
+  .chat-input-row button{background:none; border:none; color:var(--brass-dark); padding:6px 10px;}
+
+  /* ---------- Footer ---------- */
+  footer.site{background:var(--ink); color:rgba(251,248,242,.75); padding:48px 0 24px; margin-top:40px;}
+  .footer-grid{display:grid; grid-template-columns:2fr 1fr 1fr; gap:36px; margin-bottom:32px;}
+  footer.site h4{color:var(--paper-light); font-family:'Inter',sans-serif; font-weight:600; font-size:.85rem; margin-bottom:12px;}
+  footer.site p, footer.site li{font-size:.85rem; line-height:1.7;}
+  footer.site ul{list-style:none; padding:0; margin:0;}
+  .footer-bottom{border-top:1px solid rgba(255,255,255,.1); padding-top:20px; font-size:.78rem; display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;}
+
+  @media print{
+    body *{visibility:hidden;}
+    #invoiceModal, #invoiceModal *{visibility:visible;}
+    #invoiceModal{position:absolute; inset:0; background:#fff;}
+    .modal-close{display:none;}
+  }
+
+  @media (max-width:900px){
+    .hero{grid-template-columns:1fr; gap:28px;}
+    .spread{display:none;}
+    .value-row{grid-template-columns:1fr; gap:18px;}
+    .shop-layout, .product-layout, .cart-layout, .admin-layout{grid-template-columns:1fr;}
+    .filters{position:static; margin-bottom:20px;}
+    .chart-grid{grid-template-columns:1fr;}
+    .footer-grid{grid-template-columns:1fr 1fr;}
+  }
+  @media (max-width:640px){
+    .nav-row{height:60px;}
+    nav.main-nav, .search-wrap{display:none;}
+    .hamburger{display:block;}
+    .form-grid, .card-input-row{grid-template-columns:1fr;}
+    .cart-line{grid-template-columns:50px 1fr; row-gap:8px;}
+    .footer-grid{grid-template-columns:1fr;}
+    .chat-panel{width:calc(100vw - 32px); right:16px;}
+    .hero h1{font-size:1.9rem;}
+  }
+</style>
+</head>
+<body>
+
+<div class="toast-stack" id="toastStack"></div>
+
+<header class="site">
+  <div class="container nav-row">
+    <div class="brand">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M3 5.5C3 4.7 3.7 4 4.5 4H11v16H4.5c-.8 0-1.5-.7-1.5-1.5v-13z" fill="currentColor" opacity=".9"/><path d="M21 5.5c0-.8-.7-1.5-1.5-1.5H13v16h6.5c.8 0 1.5-.7 1.5-1.5v-13z" fill="currentColor" opacity=".55"/></svg>
+      Inkleaf Books
+    </div>
+    <nav class="main-nav" id="mainNav">
+      <button data-nav="home">Home</button>
+      <button data-nav="shop">Shop</button>
+      <button data-nav="orders">My Orders</button>
+    </nav>
+    <div class="search-wrap">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" id="globalSearch" placeholder="Search titles or authors">
+    </div>
+    <div class="nav-actions">
+      <button class="icon-btn" id="cartIconBtn" aria-label="Cart">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M1 1h3l2.6 13.2a2 2 0 0 0 2 1.8h9.8a2 2 0 0 0 2-1.6L23 6H6"/></svg>
+        <span class="badge-count" id="cartBadge">0</span>
+      </button>
+      <div class="account-menu" id="accountMenu"></div>
+      <button class="hamburger" id="hamburgerBtn" aria-label="Menu">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+    </div>
+  </div>
+  <div class="mobile-nav" id="mobileNav">
+    <button data-nav="home">Home</button>
+    <button data-nav="shop">Shop</button>
+    <button data-nav="orders">My Orders</button>
+    <button data-nav="profile">Profile</button>
+  </div>
+</header>
+
+<main>
+  <!-- HOME -->
+  <section class="view" id="view-home">
+    <div class="container">
+      <div class="hero">
+        <div>
+          <h1>Every book on this shelf<br>was chosen, not stocked.</h1>
+          <p class="lede">Inkleaf is a small online bookshop built for readers in Chhatrapati Sambhajinagar and beyond — fiction, academics, comics and more, with recommendations that actually pay attention.</p>
+          <div class="hero-actions">
+            <button class="btn btn-primary" data-nav="shop">Browse the shelves</button>
+            <button class="btn btn-ghost" id="heroBestsellerBtn">See bestsellers</button>
+          </div>
+        </div>
+        <div class="spread" id="heroSpread"></div>
+      </div>
+
+      <div class="value-row">
+        <div class="value-item"><h4>Free delivery over ₹499</h4><p>Standard delivery in 3–5 business days across India.</p></div>
+        <div class="value-item"><h4>Sandbox-secure checkout</h4><p>UPI, cards and net banking through a test-mode payment flow.</p></div>
+        <div class="value-item"><h4>Easy 7-day returns</h4><p>Changed your mind? Unused books go back without a hassle.</p></div>
+      </div>
+
+      <div class="section-head"><h3>Browse by shelf</h3></div>
+      <div class="shelf-row" id="categoryShelf"></div>
+
+      <div class="section-head"><h3>Bestsellers</h3><button class="link-btn" data-nav="shop">View all</button></div>
+      <div class="book-grid" id="bestsellerGrid"></div>
+
+      <div class="section-head"><h3>New &amp; featured</h3><button class="link-btn" data-nav="shop">View all</button></div>
+      <div class="book-grid" id="featuredGrid"></div>
+    </div>
+  </section>
+
+  <!-- SHOP -->
+  <section class="view" id="view-shop">
+    <div class="container">
+      <div class="view-head">
+        <h2>Shop all books</h2>
+        <select class="sort-select" id="sortSelect">
+          <option value="relevance">Sort: Relevance</option>
+          <option value="price-asc">Price: Low to high</option>
+          <option value="price-desc">Price: High to low</option>
+          <option value="rating">Highest rated</option>
+        </select>
+      </div>
+      <div class="shop-layout">
+        <aside class="filters">
+          <h4>Category</h4>
+          <div class="filter-group" id="categoryFilters"></div>
+          <h4>Price range (₹)</h4>
+          <div class="filter-group">
+            <div class="range-row">
+              <input type="number" id="priceMin" placeholder="Min">
+              <span>–</span>
+              <input type="number" id="priceMax" placeholder="Max">
+            </div>
+          </div>
+          <h4>Minimum rating</h4>
+          <div class="filter-group" id="ratingFilters"></div>
+          <button class="btn btn-ghost btn-sm btn-block" id="clearFiltersBtn">Clear filters</button>
+        </aside>
+        <div>
+          <p class="muted small" id="resultCount" style="margin-bottom:14px;"></p>
+          <div class="book-grid" id="shopGrid"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRODUCT -->
+  <section class="view" id="view-product">
+    <div class="container" id="productContainer"></div>
+  </section>
+
+  <!-- CART -->
+  <section class="view" id="view-cart">
+    <div class="container">
+      <div class="view-head"><h2>Your cart</h2></div>
+      <div id="cartContent"></div>
+    </div>
+  </section>
+
+  <!-- CHECKOUT -->
+  <section class="view" id="view-checkout">
+    <div class="container">
+      <div class="view-head"><h2>Checkout</h2></div>
+      <div class="steps">
+        <div class="step active" id="stepDot-1"><div class="dot">1</div>Address</div>
+        <div class="step" id="stepDot-2"><div class="dot">2</div>Payment</div>
+        <div class="step" id="stepDot-3"><div class="dot">3</div>Review</div>
+      </div>
+      <div id="checkoutContent"></div>
+    </div>
+  </section>
+
+  <!-- ORDERS -->
+  <section class="view" id="view-orders">
+    <div class="container">
+      <div class="view-head"><h2>My orders</h2></div>
+      <div id="ordersContent"></div>
+    </div>
+  </section>
+
+  <!-- PROFILE -->
+  <section class="view" id="view-profile">
+    <div class="container" style="max-width:520px;">
+      <div class="view-head"><h2>My profile</h2></div>
+      <div id="profileContent"></div>
+    </div>
+  </section>
+
+  <!-- ADMIN -->
+  <section class="view" id="view-admin">
+    <div class="container">
+      <div class="view-head"><h2 id="adminTitle">Dashboard</h2></div>
+      <div class="admin-layout">
+        <nav class="admin-nav" id="adminNav"></nav>
+        <div id="adminContent"></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <h4>Inkleaf Books</h4>
+        <p>An independent online bookshop and BCA E-Commerce Laboratory mini project — Dr. Babasaheb Ambedkar Marathwada University, Chhatrapati Sambhajinagar.</p>
+      </div>
+      <div>
+        <h4>Shop</h4>
+        <ul><li>Fiction</li><li>Academic</li><li>Self-Help</li><li>Children's</li></ul>
+      </div>
+      <div>
+        <h4>Support</h4>
+        <ul><li>Shipping &amp; returns</li><li>Track an order</li><li>Contact: support@inkleaf.test</li></ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Inkleaf Books. Demo project — no real payments are processed.</span>
+      <span>Built for BCA709P-C, E-Commerce Laboratory by moneeb mohamed</span>
+    </div>
+  </div>
+</footer>
+
+<!-- CHAT WIDGET -->
+<button class="chat-fab" id="chatFab" aria-label="Open chat">
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+</button>
+<div class="chat-panel" id="chatPanel">
+  <div class="chat-head">Ink<span>Customer support assistant</span></div>
+  <div class="chat-body" id="chatBody"></div>
+  <div class="chat-input-row">
+    <input type="text" id="chatInput" placeholder="Ask about orders, shipping, returns…">
+    <button id="chatSendBtn" aria-label="Send">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg>
+    </button>
+  </div>
+</div>
+
+<!-- AUTH MODAL -->
+<div class="overlay" id="authModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('authModal')">✕</button>
+    <div class="auth-tabs">
+      <button data-tab="login" class="active">Log in</button>
+      <button data-tab="register">Create account</button>
+    </div>
+    <div class="auth-panel active" id="loginPanel">
+      <h3 style="font-size:1.2rem;">Welcome back</h3>
+      <form id="loginForm">
+        <div class="field"><label>Email</label><input type="email" id="loginEmail" required></div>
+        <div class="field"><label>Password</label><input type="password" id="loginPassword" required></div>
+        <button class="btn btn-primary btn-block" type="submit">Log in</button>
+      </form>
+      <div class="demo-hint">Demo accounts — Admin: admin@inkleaf.test / Admin@123 &nbsp;·&nbsp; Seller: seller@inkleaf.test / Seller@123 &nbsp;·&nbsp; Customer: customer@inkleaf.test / Customer@123</div>
+    </div>
+    <div class="auth-panel" id="registerPanel">
+      <h3 style="font-size:1.2rem;">Create your account</h3>
+      <form id="registerForm">
+        <div class="field"><label>Full name</label><input type="text" id="regName" required></div>
+        <div class="field"><label>Email</label><input type="email" id="regEmail" required></div>
+        <div class="field"><label>Phone</label><input type="tel" id="regPhone" placeholder="+91 90000 00000"></div>
+        <div class="field"><label>Password</label><input type="password" id="regPassword" required minlength="6"></div>
+        <button class="btn btn-primary btn-block" type="submit">Create account</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- PAYMENT MODAL -->
+<div class="overlay" id="paymentModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closePaymentModal()">✕</button>
+    <span class="sandbox-badge">Sandbox · Test mode payment</span>
+    <h3 style="font-size:1.2rem;">Pay <span id="paymentAmount"></span></h3>
+    <div class="pay-methods" id="payMethodTabs">
+      <button class="pay-method selected" data-method="UPI">UPI</button>
+      <button class="pay-method" data-method="Card">Card</button>
+      <button class="pay-method" data-method="COD">Cash on delivery</button>
+    </div>
+    <div id="payMethodBody"></div>
+    <button class="btn btn-primary btn-block" id="payNowBtn" style="margin-top:6px;">Pay Now</button>
+    <p class="small muted" style="margin-top:12px;">This is a simulated sandbox gateway for the mini project — no real card or bank details are transmitted anywhere.</p>
+  </div>
+</div>
+
+<!-- INVOICE MODAL -->
+<div class="overlay" id="invoiceModal">
+  <div class="modal-box wide">
+    <button class="modal-close" onclick="closeModal('invoiceModal')">✕</button>
+    <div id="invoiceContent"></div>
+    <button class="btn btn-dark btn-block" style="margin-top:10px;" onclick="window.print()">Print / save as PDF</button>
+  </div>
+</div>
+
+<script>
+/* =====================================================================
+   INKLEAF BOOKS — Online Book Store (BCA709P-C Mini Project)
+   Single-file vanilla JS app. See README.md for architecture notes.
+===================================================================== */
+
+/* ============ CONFIG ============ */
+const CONFIG = {
+  storeName: 'Inkleaf Books',
+  currency: '₹',
+  taxRate: 0.05,
+  freeShippingThreshold: 499,
+  shippingFee: 49,
+  storageKey: 'inkleaf-bookstore-data-v1',
+  razorpayKeyId: 'YOUR_RAZORPAY_TEST_KEY_ID' // placeholder — see README for real gateway integration
+};
+
+const CATEGORY_COLORS = {
+  'Fiction': '#B8863B', 'Non-Fiction': '#2E4234', 'Academic': '#3B5166',
+  "Children's": '#B4656F', 'Comics': '#2F7A6B', 'Self-Help': '#7A2E2E',
+  'Mystery': '#4B3358', 'Biography': '#7C7233'
+};
+
+const hasStorage = typeof window !== 'undefined' && !!window.storage;
+
+/* ============ SEED DATA ============ */
+const SEED_BOOKS = [
+  {id:'b1', title:'The Silent Orchard', author:'Meera Kulkarni', category:'Fiction', price:399, stock:24, rating:4.5, bestseller:true, featured:true, tags:['drama','family'], description:'A quiet Pune household unravels three generations of secrets the year the old orchard finally stops bearing fruit.'},
+  {id:'b2', title:'Codebreakers of Pune', author:'Arvind Rao', category:'Non-Fiction', price:549, stock:12, rating:4.2, bestseller:false, featured:true, tags:['history','wartime'], description:'The untold story of the codebreaking unit that worked out of a Pune bungalow during the Second World War.'},
+  {id:'b3', title:'Data Structures Made Simple', author:'Dr. S. Iyer', category:'Academic', price:299, stock:40, rating:4.7, bestseller:true, featured:true, tags:['computer science','textbook'], description:'A friendly, example-driven walkthrough of stacks, queues, trees and graphs for first-year computer science students.'},
+  {id:'b4', title:'The Little Star Who Lost Her Shine', author:'Anjali Verma', category:"Children's", price:199, stock:30, rating:4.8, bestseller:false, featured:true, tags:['picture book','bedtime'], description:'A gentle bedtime story about a small star who learns that dimming for a while only means she needs rest.'},
+  {id:'b5', title:'Pixel & Ink, Vol. 1', author:'Rohan Fernandes', category:'Comics', price:249, stock:18, rating:4.3, bestseller:false, featured:false, tags:['graphic novel','sci-fi'], description:'Volume one of a hand-inked sci-fi series following a scrap-metal courier on the edges of a floating city.'},
+  {id:'b6', title:'Atomic Focus', author:'Priya Nair', category:'Self-Help', price:349, stock:22, rating:4.6, bestseller:true, featured:true, tags:['productivity','habits'], description:'A practical, no-nonsense guide to building focus habits that survive a genuinely busy, distraction-filled life.'},
+  {id:'b7', title:'Shadows Over Sambhaji Nagar', author:'Kabir Shaikh', category:'Mystery', price:379, stock:15, rating:4.4, bestseller:false, featured:false, tags:['thriller','crime'], description:'A missing manuscript, a retired inspector, and a city that remembers more than it says.'},
+  {id:'b8', title:"The Mathematician's Garden", author:'Dr. N. Deshmukh', category:'Academic', price:329, stock:20, rating:4.1, bestseller:false, featured:false, tags:['mathematics','textbook'], description:'Everyday puzzles and visual proofs that make abstract mathematics feel like a walk through a garden.'},
+  {id:'b9', title:'Letters from Konkan', author:'Sneha Patil', category:'Fiction', price:289, stock:9, rating:4.0, bestseller:false, featured:false, tags:['epistolary','coastal'], description:"A year of letters between two sisters — one who stayed on the Konkan coast, one who left for the city."},
+  {id:'b10', title:'Marketing in the Digital Bazaar', author:'Vivek Agarwal', category:'Non-Fiction', price:449, stock:16, rating:4.3, bestseller:false, featured:false, tags:['business','marketing'], description:"A practical playbook for marketing to India's fast-moving, mobile-first digital shoppers."},
+  {id:'b11', title:'The Dreaming Loom', author:'Kavita Joshi', category:"Children's", price:179, stock:28, rating:4.6, bestseller:false, featured:false, tags:['fantasy','picture book'], description:'A magical loom weaves a different bedtime world every night in this richly illustrated picture book.'},
+  {id:'b12', title:'Ironclad: The Rise', author:'Sameer Khan', category:'Comics', price:259, stock:13, rating:4.2, bestseller:false, featured:false, tags:['superhero','action'], description:'The origin story of an unlikely armored hero standing between two rival cities.'},
+  {id:'b13', title:'The Quiet Discipline', author:'Ananya Bose', category:'Self-Help', price:319, stock:19, rating:4.5, bestseller:false, featured:false, tags:['mindset','focus'], description:"Short, structured exercises for building the kind of discipline that doesn't rely on motivation."},
+  {id:'b14', title:'A Life in Footnotes', author:'Ramesh Iyengar', category:'Biography', price:399, stock:11, rating:4.4, bestseller:false, featured:false, tags:['memoir','academia'], description:'A historian\'s wry, self-deprecating memoir of a life spent chasing sources instead of glory.'},
+  {id:'b15', title:'Algorithms for Everyday Life', author:'Dr. T. Menon', category:'Academic', price:359, stock:25, rating:4.7, bestseller:true, featured:false, tags:['computer science','logic'], description:'Classic algorithms explained through the small decisions of an ordinary day — queues, shortcuts and trade-offs.'},
+  {id:'b16', title:'The Last Monsoon', author:'Meera Kulkarni', category:'Fiction', price:349, stock:17, rating:4.5, bestseller:false, featured:false, tags:['drama','monsoon'], description:"A family waits out the season's last monsoon and, with it, an old argument that finally comes to rest."}
+];
+
+const SEED_CATEGORIES = ['Fiction','Non-Fiction','Academic',"Children's",'Comics','Self-Help','Mystery','Biography'];
+
+/* ============ STATE ============ */
+let state = {
+  books: [],
+  categories: [],
+  users: [],
+  orders: [],
+  currentUser: null,
+  cart: [],
+  viewHistory: [],
+  notifications: []
+};
+let currentView = 'home';
+let currentProductId = null;
+let checkoutStep = 1;
+let checkoutAddress = null;
+let selectedPayMethod = 'UPI';
+let chartRegistry = {};
+
+/* ============ UTILITIES ============ */
+function escapeHtml(str){
+  if(str === null || str === undefined) return '';
+  return String(str).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+}
+function formatCurrency(n){
+  return CONFIG.currency + Number(n).toLocaleString('en-IN', {maximumFractionDigits:0});
+}
+function formatDate(iso){
+  return new Date(iso).toLocaleDateString('en-IN', {day:'2-digit', month:'short', year:'numeric'});
+}
+function daysAgoIso(n, hour){
+  const d = new Date();
+  d.setDate(d.getDate() - n);
+  d.setHours(hour || 10, 15, 0, 0);
+  return d.toISOString();
+}
+function uid(prefix){
+  return prefix + '-' + Date.now().toString(36) + Math.floor(Math.random()*1000).toString(36);
+}
+function starString(rating){
+  const full = Math.round(rating);
+  return '★'.repeat(full) + '☆'.repeat(5-full);
+}
+function showToast(message, type){
+  const stack = document.getElementById('toastStack');
+  const el = document.createElement('div');
+  el.className = 'toast' + (type ? ' ' + type : '');
+  el.textContent = message;
+  stack.appendChild(el);
+  setTimeout(() => { el.style.opacity = '0'; el.style.transition = 'opacity .3s'; setTimeout(()=>el.remove(), 300); }, 3200);
+}
+function pushNotification(message){
+  state.notifications.unshift({message, at: new Date().toISOString()});
+  showToast(message);
+}
+function openModal(id){ document.getElementById(id).classList.add('open'); }
+function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+
+/* ============ PERSISTENCE ============ */
+async function loadState(){
+  if(!hasStorage) return false;
+  try{
+    const res = await window.storage.get(CONFIG.storageKey);
+    if(res && res.value){
+      const parsed = JSON.parse(res.value);
+      if(parsed.books && parsed.books.length){
+        state.books = parsed.books;
+        state.categories = parsed.categories || SEED_CATEGORIES.slice();
+        state.users = parsed.users || [];
+        state.orders = parsed.orders || [];
+        return true;
+      }
+    }
+  }catch(e){ /* no saved data yet, or storage unavailable — fall back to seeding */ }
+  return false;
+}
+async function saveState(){
+  if(!hasStorage) return;
+  try{
+    await window.storage.set(CONFIG.storageKey, JSON.stringify({
+      books: state.books, categories: state.categories, users: state.users, orders: state.orders
+    }));
+  }catch(e){ console.warn('Could not persist data; continuing in-memory only.', e); }
+}
+
+/* ============ AUTH (client-side demo hashing) ============ */
+async function sha256Hex(text){
+  const enc = new TextEncoder().encode(text);
+  const buf = await crypto.subtle.digest('SHA-256', enc);
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
+function randomSalt(){
+  return Array.from(crypto.getRandomValues(new Uint8Array(12))).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+async function hashPassword(password, salt){
+  return sha256Hex(salt + ':' + password);
+}
+async function seedDemoAccountsAndOrders(){
+  const accounts = [
+    {id:'admin-1', name:'Store Admin', email:'admin@inkleaf.test', role:'admin', phone:'+91 98200 00001', password:'Admin@123'},
+    {id:'seller-1', name:'Rhea Sharma', email:'seller@inkleaf.test', role:'seller', phone:'+91 98200 00002', password:'Seller@123'},
+    {id:'cust-1', name:'Aditya Kulkarni', email:'customer@inkleaf.test', role:'customer', phone:'+91 98200 00003', password:'Customer@123',
+      address:{line1:'12 Ganesh Colony', city:'Chhatrapati Sambhajinagar', state:'Maharashtra', pincode:'431001'}}
+  ];
+  for(const acc of accounts){
+    const salt = randomSalt();
+    const passwordHash = await hashPassword(acc.password, salt);
+    state.users.push({
+      id:acc.id, name:acc.name, email:acc.email, role:acc.role, phone:acc.phone,
+      address:acc.address || null, salt, passwordHash, createdAt:new Date().toISOString()
+    });
+  }
+  const defs = [
+    {daysBack:13, items:[{bookId:'b3',qty:2}], status:'Delivered', method:'UPI'},
+    {daysBack:12, items:[{bookId:'b6',qty:1},{bookId:'b13',qty:1}], status:'Delivered', method:'Card'},
+    {daysBack:11, items:[{bookId:'b1',qty:1}], status:'Delivered', method:'UPI'},
+    {daysBack:10, items:[{bookId:'b15',qty:1},{bookId:'b3',qty:1}], status:'Delivered', method:'Card'},
+    {daysBack:9,  items:[{bookId:'b4',qty:2}], status:'Delivered', method:'COD'},
+    {daysBack:8,  items:[{bookId:'b7',qty:1}], status:'Cancelled', method:'UPI'},
+    {daysBack:7,  items:[{bookId:'b6',qty:1}], status:'Delivered', method:'UPI'},
+    {daysBack:6,  items:[{bookId:'b1',qty:1},{bookId:'b16',qty:1}], status:'Delivered', method:'Card'},
+    {daysBack:5,  items:[{bookId:'b3',qty:3}], status:'Delivered', method:'UPI'},
+    {daysBack:4,  items:[{bookId:'b10',qty:1}], status:'Shipped', method:'COD'},
+    {daysBack:2,  items:[{bookId:'b6',qty:1},{bookId:'b4',qty:1}], status:'Shipped', method:'UPI'},
+    {daysBack:1,  items:[{bookId:'b15',qty:2}], status:'Placed', method:'Card'}
+  ];
+  const custAddress = accounts[2].address;
+  defs.forEach((def, i) => {
+    const items = def.items.map(it => {
+      const book = state.books.find(b=>b.id===it.bookId);
+      return {bookId:it.bookId, title:book.title, qty:it.qty, price:book.price};
+    });
+    const subtotal = items.reduce((s,it)=>s+it.price*it.qty,0);
+    const shipping = subtotal >= CONFIG.freeShippingThreshold ? 0 : CONFIG.shippingFee;
+    const tax = Math.round(subtotal * CONFIG.taxRate);
+    const paymentStatus = def.status === 'Cancelled' ? 'Refunded' : (def.method === 'COD' && def.status !== 'Delivered' ? 'Pending' : 'Paid');
+    state.orders.push({
+      id:'INK-10' + (i+1).toString().padStart(2,'0'),
+      userId:'cust-1', items, subtotal, shipping, tax, total:subtotal+shipping+tax,
+      address:custAddress, paymentMethod:def.method, paymentStatus, status:def.status,
+      createdAt:daysAgoIso(def.daysBack)
+    });
+  });
+}
+
+async function handleLogin(email, password){
+  const user = state.users.find(u => u.email.toLowerCase() === email.trim().toLowerCase());
+  if(!user){ showToast('No account found with that email.', 'error'); return; }
+  const hash = await hashPassword(password, user.salt);
+  if(hash !== user.passwordHash){ showToast('Incorrect password.', 'error'); return; }
+  state.currentUser = user;
+  closeModal('authModal');
+  renderAccountMenu();
+  showToast('Welcome back, ' + user.name.split(' ')[0] + '.', 'success');
+  navigate(user.role === 'customer' ? 'home' : 'admin');
+}
+async function handleRegister(name, email, phone, password){
+  const exists = state.users.find(u => u.email.toLowerCase() === email.trim().toLowerCase());
+  if(exists){ showToast('An account with this email already exists.', 'error'); return; }
+  const salt = randomSalt();
+  const passwordHash = await hashPassword(password, salt);
+  const user = {id:uid('u'), name, email:email.trim(), phone:phone||'', role:'customer', address:null, salt, passwordHash, createdAt:new Date().toISOString()};
+  state.users.push(user);
+  await saveState();
+  state.currentUser = user;
+  closeModal('authModal');
+  renderAccountMenu();
+  showToast('Welcome, ' + name.split(' ')[0] + '. Your account is ready.', 'success');
+  navigate('home');
+}
+function handleLogout(){
+  state.currentUser = null;
+  renderAccountMenu();
+  navigate('home');
+  showToast('You have been logged out.');
+}
+function requireLogin(afterMessage){
+  showToast(afterMessage || 'Please log in to continue.', 'error');
+  openAuthModal('login');
+}
+
+/* ============ CART ============ */
+function addToCart(bookId, qty){
+  qty = qty || 1;
+  const book = state.books.find(b => b.id === bookId);
+  if(!book) return;
+  const existing = state.cart.find(c => c.bookId === bookId);
+  const currentQty = existing ? existing.qty : 0;
+  if(currentQty + qty > book.stock){ showToast('Only ' + book.stock + ' left in stock.', 'error'); return; }
+  if(existing) existing.qty += qty; else state.cart.push({bookId, qty});
+  updateCartBadge();
+  showToast('Added "' + book.title + '" to your cart.', 'success');
+}
+function setCartQty(bookId, qty){
+  const book = state.books.find(b => b.id === bookId);
+  if(qty <= 0){ state.cart = state.cart.filter(c => c.bookId !== bookId); }
+  else if(qty > book.stock){ showToast('Only ' + book.stock + ' left in stock.', 'error'); return; }
+  else { const item = state.cart.find(c => c.bookId === bookId); if(item) item.qty = qty; }
+  updateCartBadge();
+  renderCartView();
+}
+function getCartDetails(){
+  const items = state.cart.map(c => ({...c, book: state.books.find(b => b.id === c.bookId)})).filter(i => i.book);
+  const subtotal = items.reduce((s,i) => s + i.book.price * i.qty, 0);
+  const shipping = (subtotal === 0 || subtotal >= CONFIG.freeShippingThreshold) ? 0 : CONFIG.shippingFee;
+  const tax = Math.round(subtotal * CONFIG.taxRate);
+  return {items, subtotal, shipping, tax, total: subtotal + shipping + tax};
+}
+function updateCartBadge(){
+  document.getElementById('cartBadge').textContent = state.cart.reduce((s,c) => s+c.qty, 0);
+}
+
+/* ============ ORDERS ============ */
+async function createOrder(address, paymentMethod){
+  const {items, subtotal, shipping, tax, total} = getCartDetails();
+  for(const it of items){
+    if(it.qty > it.book.stock){ showToast('"' + it.book.title + '" no longer has enough stock.', 'error'); return null; }
+  }
+  items.forEach(it => { it.book.stock -= it.qty; });
+  const order = {
+    id: uid('INK').toUpperCase(),
+    userId: state.currentUser.id,
+    items: items.map(i => ({bookId:i.bookId, title:i.book.title, qty:i.qty, price:i.book.price})),
+    subtotal, shipping, tax, total, address, paymentMethod,
+    paymentStatus: paymentMethod === 'COD' ? 'Pending' : 'Paid',
+    status: 'Placed',
+    createdAt: new Date().toISOString()
+  };
+  state.orders.push(order);
+  state.cart = [];
+  updateCartBadge();
+  await saveState();
+  pushNotification('Order confirmation emailed to ' + state.currentUser.email);
+  pushNotification('SMS sent to ' + (state.currentUser.phone || 'your registered number') + ' — order ' + order.id + ' placed');
+  return order;
+}
+function updateOrderStatus(orderId, status){
+  const order = state.orders.find(o => o.id === orderId);
+  if(!order) return;
+  order.status = status;
+  if(status === 'Delivered' && order.paymentMethod === 'COD') order.paymentStatus = 'Paid';
+  if(status === 'Cancelled') order.paymentStatus = 'Refunded';
+  saveState();
+  pushNotification('Order ' + orderId + ' marked as ' + status);
+  renderAdminContent();
+}
+function generateInvoiceHtml(order){
+  const user = state.users.find(u => u.id === order.userId) || {};
+  const addr = order.address || {};
+  const rows = order.items.map(i =>
+    '<tr><td>' + escapeHtml(i.title) + '</td><td>' + i.qty + '</td><td>' + formatCurrency(i.price) + '</td><td>' + formatCurrency(i.price*i.qty) + '</td></tr>'
+  ).join('');
+  return '' +
+    '<div class="invoice">' +
+      '<div class="invoice-head">' +
+        '<div><h3>Inkleaf Books</h3><p class="muted small">Chhatrapati Sambhajinagar, Maharashtra, India</p></div>' +
+        '<div class="invoice-meta"><p><strong>Invoice ' + order.id + '</strong></p><p class="muted small">' + formatDate(order.createdAt) + '</p></div>' +
+      '</div>' +
+      '<div class="invoice-parties">' +
+        '<div><strong>Billed to</strong><br>' + escapeHtml(user.name||'') + '<br>' + escapeHtml(addr.line1||'') + '<br>' + escapeHtml(addr.city||'') + ', ' + escapeHtml(addr.state||'') + ' ' + escapeHtml(addr.pincode||'') + '</div>' +
+        '<div><strong>Payment</strong><br>Method: ' + order.paymentMethod + '<br>Status: ' + order.paymentStatus + '</div>' +
+      '</div>' +
+      '<table class="invoice-table"><thead><tr><th>Item</th><th>Qty</th><th>Price</th><th>Amount</th></tr></thead><tbody>' + rows + '</tbody></table>' +
+      '<div class="invoice-totals">' +
+        '<div><span>Subtotal</span><span>' + formatCurrency(order.subtotal) + '</span></div>' +
+        '<div><span>Shipping</span><span>' + (order.shipping ? formatCurrency(order.shipping) : 'Free') + '</span></div>' +
+        '<div><span>Tax (5%)</span><span>' + formatCurrency(order.tax) + '</span></div>' +
+        '<div class="invoice-total-row"><span>Total</span><span>' + formatCurrency(order.total) + '</span></div>' +
+      '</div>' +
+    '</div>';
+}
+function openInvoice(orderId){
+  const order = state.orders.find(o => o.id === orderId);
+  if(!order) return;
+  document.getElementById('invoiceContent').innerHTML = generateInvoiceHtml(order);
+  openModal('invoiceModal');
+}
+
+/* ============ RECOMMENDATIONS ============ */
+function getSimilarBooks(book, limit){
+  limit = limit || 4;
+  return state.books.filter(b => b.id !== book.id && b.category === book.category)
+    .sort((a,b) => b.rating - a.rating).slice(0, limit);
+}
+function getFrequentlyBoughtTogether(book, limit){
+  limit = limit || 3;
+  const coCounts = {};
+  state.orders.forEach(o => {
+    const ids = o.items.map(i => i.bookId);
+    if(ids.includes(book.id)){
+      ids.forEach(id => { if(id !== book.id) coCounts[id] = (coCounts[id]||0) + 1; });
+    }
+  });
+  let results = Object.entries(coCounts).sort((a,b) => b[1]-a[1]).map(([id]) => state.books.find(b => b.id===id)).filter(Boolean);
+  if(results.length < limit){
+    getSimilarBooks(book, limit).forEach(b => { if(!results.find(r=>r.id===b.id)) results.push(b); });
+  }
+  return results.slice(0, limit);
+}
+function getBecauseYouViewed(limit){
+  limit = limit || 4;
+  const recent = state.viewHistory.slice(-3).reverse();
+  const out = [];
+  recent.forEach(bookId => {
+    const b = state.books.find(x => x.id === bookId);
+    if(b) getSimilarBooks(b, 2).forEach(s => { if(!out.find(r=>r.id===s.id) && s.id!==bookId) out.push(s); });
+  });
+  return out.slice(0, limit);
+}
+
+/* ============ AI DESCRIPTION GENERATOR (template-based demo) ============ */
+const DESC_OPENERS = {
+  'Fiction':['Step into a story that lingers.', 'A narrative that rewards patient readers.'],
+  'Non-Fiction':['A clear-eyed, well-researched read.', 'Grounded, carefully reported, and easy to follow.'],
+  'Academic':['A dependable companion for coursework.', 'Built to make a hard subject approachable.'],
+  "Children's":['A warm, read-aloud favourite in the making.', 'Gentle, imaginative, and beautifully paced.'],
+  'Comics':['Bold panels and a story that moves fast.', 'Sharp art paired with a story worth following.'],
+  'Self-Help':['Practical advice you can start using today.', 'Straightforward guidance, no fluff.'],
+  'Mystery':['A slow-burn plot that rewards attention.', 'Twists that are earned, not cheap.'],
+  'Biography':['An intimate, honestly told life story.', 'A portrait drawn with real care.']
+};
+function generateDescription(title, author, category){
+  const openers = DESC_OPENERS[category] || ['A book worth making time for.'];
+  const opener = openers[Math.floor(Math.random()*openers.length)];
+  return opener + ' "' + title + '" by ' + author + ' is one of our ' + category.toLowerCase() + ' picks this season — add a line or two about what makes it special, then publish.';
+}
+
+/* ============ CHATBOT (rule-based; see README for real LLM upgrade path) ============ */
+function getBotReply(raw){
+  const msg = raw.toLowerCase();
+  if(/\b(hi|hello|hey)\b/.test(msg)) return "Hello. I'm Ink — I can help with orders, shipping, returns, payments or a book recommendation.";
+  if(/order|track|where is my/.test(msg)){
+    if(!state.currentUser) return 'Log in from the account menu and I can look up your order status.';
+    const mine = state.orders.filter(o => o.userId === state.currentUser.id);
+    if(!mine.length) return "I don't see any orders on your account yet — the Shop page has a few good places to start.";
+    const latest = mine[mine.length-1];
+    return 'Your most recent order, ' + latest.id + ', is currently ' + latest.status + '.';
+  }
+  if(/return|refund/.test(msg)) return 'Books can be returned within 7 days of delivery if unused and undamaged. Open My Orders and select the order to start a return.';
+  if(/ship|delivery/.test(msg)) return 'Standard delivery takes 3–5 business days. Orders over ₹499 ship free.';
+  if(/pay|upi|card|cod/.test(msg)) return 'We accept UPI, cards and cash on delivery. This demo runs a sandbox payment flow — no real transaction takes place.';
+  if(/recommend|suggest|good book|what should i read/.test(msg)){
+    const pick = state.books.slice().sort((a,b) => b.rating - a.rating)[0];
+    return 'Our top-rated pick right now is "' + pick.title + '" by ' + pick.author + ', rated ' + pick.rating + ' out of 5.';
+  }
+  if(/human|agent|person/.test(msg)) return "I've noted that. Our support team usually replies within a few hours at support@inkleaf.test.";
+  if(/thank/.test(msg)) return "You're welcome. Happy reading.";
+  if(/bye/.test(msg)) return 'Goodbye — come back soon for your next read.';
+  return "I can help with order status, shipping, returns, payments or a recommendation — what would you like to know?";
+}
+function initChatWidget(){
+  const body = document.getElementById('chatBody');
+  addChatMsg('bot', "Hello. I'm Ink, your reading assistant. Ask me about orders, shipping, returns or a book recommendation.");
+  document.getElementById('chatFab').addEventListener('click', () => {
+    document.getElementById('chatPanel').classList.toggle('open');
+  });
+  document.getElementById('chatSendBtn').addEventListener('click', sendChatMsg);
+  document.getElementById('chatInput').addEventListener('keydown', e => { if(e.key==='Enter') sendChatMsg(); });
+}
+function addChatMsg(who, text){
+  const body = document.getElementById('chatBody');
+  const el = document.createElement('div');
+  el.className = 'chat-msg ' + who;
+  el.textContent = text;
+  body.appendChild(el);
+  body.scrollTop = body.scrollHeight;
+}
+function sendChatMsg(){
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if(!text) return;
+  addChatMsg('user', text);
+  input.value = '';
+  setTimeout(() => addChatMsg('bot', getBotReply(text)), 350);
+}
+
+/* ============ ANALYTICS ============ */
+function computeAnalytics(){
+  const activeOrders = state.orders.filter(o => o.status !== 'Cancelled');
+  const revenue = activeOrders.reduce((s,o) => s + o.total, 0);
+  const byDay = {};
+  for(let i=13; i>=0; i--){
+    const d = new Date(); d.setDate(d.getDate()-i);
+    byDay[d.toISOString().slice(0,10)] = 0;
+  }
+  activeOrders.forEach(o => {
+    const key = o.createdAt.slice(0,10);
+    if(key in byDay) byDay[key] += o.total;
+  });
+  const unitsSold = {};
+  activeOrders.forEach(o => o.items.forEach(i => { unitsSold[i.bookId] = (unitsSold[i.bookId]||0) + i.qty; }));
+  const topBooks = Object.entries(unitsSold).sort((a,b)=>b[1]-a[1]).slice(0,5)
+    .map(([id,qty]) => ({book: state.books.find(b=>b.id===id), qty})).filter(x=>x.book);
+  const byCategory = {};
+  activeOrders.forEach(o => o.items.forEach(i => {
+    const book = state.books.find(b=>b.id===i.bookId);
+    if(book) byCategory[book.category] = (byCategory[book.category]||0) + i.price*i.qty;
+  }));
+  return {
+    revenue, orderCount: activeOrders.length,
+    customerCount: state.users.filter(u=>u.role==='customer').length,
+    avgOrderValue: activeOrders.length ? Math.round(revenue/activeOrders.length) : 0,
+    byDay, topBooks, byCategory
+  };
+}
+function simulatedTraffic(){
+  const labels = []; const sessions = [];
+  let seed = 42;
+  function rand(){ seed = (seed*9301+49297) % 233280; return seed/233280; }
+  for(let i=13;i>=0;i--){
+    const d = new Date(); d.setDate(d.getDate()-i);
+    labels.push(d.toLocaleDateString('en-IN',{day:'2-digit',month:'short'}));
+    sessions.push(Math.round(80 + rand()*140));
+  }
+  return {labels, sessions};
+}
+function destroyChart(key){ if(chartRegistry[key]){ chartRegistry[key].destroy(); delete chartRegistry[key]; } }
+function renderAnalyticsCharts(){
+  const a = computeAnalytics();
+  const dayLabels = Object.keys(a.byDay).map(k => new Date(k).toLocaleDateString('en-IN',{day:'2-digit',month:'short'}));
+  const dayValues = Object.values(a.byDay);
+
+  destroyChart('revenue');
+  chartRegistry.revenue = new Chart(document.getElementById('revenueChart'), {
+    type:'line',
+    data:{labels:dayLabels, datasets:[{label:'Revenue', data:dayValues, borderColor:'#B8863B', backgroundColor:'rgba(184,134,59,0.12)', fill:true, tension:0.35}]},
+    options:{plugins:{legend:{display:false}}, scales:{y:{beginAtZero:true}}}
+  });
+
+  destroyChart('topBooks');
+  chartRegistry.topBooks = new Chart(document.getElementById('topBooksChart'), {
+    type:'bar',
+    data:{labels:a.topBooks.map(t=>t.book.title.length>16? t.book.title.slice(0,16)+'…':t.book.title), datasets:[{label:'Units sold', data:a.topBooks.map(t=>t.qty), backgroundColor:'#2E4234'}]},
+    options:{plugins:{legend:{display:false}}, scales:{y:{beginAtZero:true, ticks:{precision:0}}}}
+  });
+
+  destroyChart('category');
+  const catEntries = Object.entries(a.byCategory);
+  chartRegistry.category = new Chart(document.getElementById('categoryChart'), {
+    type:'doughnut',
+    data:{labels:catEntries.map(e=>e[0]), datasets:[{data:catEntries.map(e=>e[1]), backgroundColor:catEntries.map(e=>CATEGORY_COLORS[e[0]]||'#999')}]},
+    options:{plugins:{legend:{position:'bottom', labels:{boxWidth:12, font:{size:11}}}}}
+  });
+
+  const traffic = simulatedTraffic();
+  destroyChart('traffic');
+  chartRegistry.traffic = new Chart(document.getElementById('trafficChart'), {
+    type:'line',
+    data:{labels:traffic.labels, datasets:[{label:'Sessions', data:traffic.sessions, borderColor:'#3B5166', backgroundColor:'rgba(59,81,102,0.1)', fill:true, tension:0.35}]},
+    options:{plugins:{legend:{display:false}}, scales:{y:{beginAtZero:true}}}
+  });
+}
+
+/* ============ NAVIGATION ============ */
+function navigate(view, param){
+  currentView = view;
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-' + view).classList.add('active');
+  document.querySelectorAll('[data-nav]').forEach(b => b.classList.toggle('active', b.dataset.nav === view));
+  document.getElementById('mobileNav').classList.remove('open');
+  window.scrollTo({top:0, behavior:'smooth'});
+
+  if(view === 'home') renderHome();
+  if(view === 'shop') renderShopView();
+  if(view === 'product') renderProductView(param || currentProductId);
+  if(view === 'cart') renderCartView();
+  if(view === 'checkout') startCheckout();
+  if(view === 'orders') renderOrdersView();
+  if(view === 'profile') renderProfileView();
+  if(view === 'admin') renderAdminShell();
+}
+
+/* ============ RENDER: HEADER / ACCOUNT ============ */
+function renderAccountMenu(){
+  const el = document.getElementById('accountMenu');
+  if(!state.currentUser){
+    el.innerHTML = '<button class="btn btn-primary btn-sm" onclick="openAuthModal(\'login\')">Log in</button>';
+    return;
+  }
+  const u = state.currentUser;
+  const initials = u.name.split(' ').map(p=>p[0]).slice(0,2).join('').toUpperCase();
+  let extraLinks = '';
+  if(u.role === 'admin' || u.role === 'seller'){
+    extraLinks = '<button onclick="navigate(\'admin\')">Dashboard</button>';
+  }
+  el.innerHTML =
+    '<button class="account-trigger" id="accountTrigger"><span class="avatar-dot">' + initials + '</span>' + escapeHtml(u.name.split(' ')[0]) + '</button>' +
+    '<div class="dropdown" id="accountDropdown">' +
+      '<div class="role-pill">' + u.role + '</div>' +
+      '<button onclick="navigate(\'orders\')">My orders</button>' +
+      '<button onclick="navigate(\'profile\')">My profile</button>' +
+      extraLinks +
+      '<button onclick="handleLogout()">Log out</button>' +
+    '</div>';
+  document.getElementById('accountTrigger').addEventListener('click', () => {
+    document.getElementById('accountDropdown').classList.toggle('open');
+  });
+}
+document.addEventListener('click', e => {
+  const dd = document.getElementById('accountDropdown');
+  if(dd && dd.classList.contains('open') && !e.target.closest('.account-menu')) dd.classList.remove('open');
+});
+function openAuthModal(tab){
+  document.querySelectorAll('.auth-tabs button').forEach(b => b.classList.toggle('active', b.dataset.tab===tab));
+  document.getElementById('loginPanel').classList.toggle('active', tab==='login');
+  document.getElementById('registerPanel').classList.toggle('active', tab==='register');
+  openModal('authModal');
+}
+
+/* ============ RENDER: HOME ============ */
+function bookCoverHtml(book, extraClass){
+  const color = CATEGORY_COLORS[book.category] || '#555';
+  const ribbon = book.bestseller ? '<div class="cover-ribbon">Bestseller</div>' : '';
+  return '<div class="' + (extraClass||'book-cover') + '" style="background:linear-gradient(160deg,' + color + ',' + color + 'cc)">' + ribbon +
+    '<div class="t">' + escapeHtml(book.title) + '</div><div class="a">' + escapeHtml(book.author) + '</div></div>';
+}
+function bookCardHtml(book){
+  const lowStock = book.stock > 0 && book.stock <= 5;
+  return '<div class="book-card" onclick="viewProduct(\'' + book.id + '\')">' +
+    bookCoverHtml(book) +
+    '<div class="book-meta"><div class="cat">' + escapeHtml(book.category) + '</div>' +
+    '<div class="name">' + escapeHtml(book.title) + '</div>' +
+    '<div class="row"><span class="price">' + formatCurrency(book.price) + '</span><span class="rating">' + starString(book.rating) + '</span></div>' +
+    (book.stock===0 ? '<div class="stock-low">Out of stock</div>' : lowStock ? '<div class="stock-low">Only ' + book.stock + ' left</div>' : '') +
+    '</div></div>';
+}
+function renderHome(){
+  const spread = document.getElementById('heroSpread');
+  const featured = state.books.filter(b=>b.featured).slice(0,3);
+  spread.innerHTML = featured.map((b,i) => {
+    const color = CATEGORY_COLORS[b.category]||'#555';
+    const rot = [-9,4,-2][i]||0, left=[0,90,170][i]||0, top=[30,0,55][i]||0;
+    return '<div class="fan-cover" style="left:' + left + 'px; top:' + top + 'px; transform:rotate(' + rot + 'deg); background:linear-gradient(160deg,' + color + ',' + color + 'cc); z-index:' + i + '"><div class="t">' + escapeHtml(b.title) + '</div><div class="a">' + escapeHtml(b.author) + '</div></div>';
+  }).join('');
+
+  document.getElementById('categoryShelf').innerHTML =
+    '<button class="shelf-tag is-all" onclick="navigate(\'shop\')">All books</button>' +
+    state.categories.map(c => '<button class="shelf-tag" style="background:' + (CATEGORY_COLORS[c]||'#666') + '" onclick="shopByCategory(\'' + c.replace(/'/g,"\\'") + '\')">' + escapeHtml(c) + '</button>').join('');
+
+  document.getElementById('bestsellerGrid').innerHTML = state.books.filter(b=>b.bestseller).map(bookCardHtml).join('') || '<p class="muted">No bestsellers yet.</p>';
+  document.getElementById('featuredGrid').innerHTML = state.books.filter(b=>b.featured).map(bookCardHtml).join('') || '<p class="muted">Nothing featured yet.</p>';
+}
+function shopByCategory(cat){
+  activeFilters.categories = [cat];
+  navigate('shop');
+}
+
+/* ============ RENDER: SHOP ============ */
+let activeFilters = {categories:[], minPrice:null, maxPrice:null, minRating:0, search:'', sort:'relevance'};
+function renderShopView(){
+  document.getElementById('categoryFilters').innerHTML = state.categories.map(c =>
+    '<label class="filter-opt"><input type="checkbox" value="' + escapeHtml(c) + '" ' + (activeFilters.categories.includes(c)?'checked':'') + ' onchange="toggleCategoryFilter(this)">' + escapeHtml(c) + '</label>'
+  ).join('');
+  document.getElementById('ratingFilters').innerHTML = [4,3,0].map(r =>
+    '<label class="filter-opt"><input type="radio" name="ratingFilter" ' + (activeFilters.minRating===r?'checked':'') + ' onchange="activeFilters.minRating=' + r + '; renderShopGrid();">' + (r>0 ? (r+'+ stars') : 'Any rating') + '</label>'
+  ).join('');
+  document.getElementById('priceMin').value = activeFilters.minPrice || '';
+  document.getElementById('priceMax').value = activeFilters.maxPrice || '';
+  document.getElementById('sortSelect').value = activeFilters.sort;
+  renderShopGrid();
+}
+function toggleCategoryFilter(input){
+  if(input.checked) activeFilters.categories.push(input.value);
+  else activeFilters.categories = activeFilters.categories.filter(c => c !== input.value);
+  renderShopGrid();
+}
+function renderShopGrid(){
+  let results = state.books.slice();
+  if(activeFilters.search) {
+    const q = activeFilters.search.toLowerCase();
+    results = results.filter(b => b.title.toLowerCase().includes(q) || b.author.toLowerCase().includes(q));
+  }
+  if(activeFilters.categories.length) results = results.filter(b => activeFilters.categories.includes(b.category));
+  if(activeFilters.minPrice) results = results.filter(b => b.price >= Number(activeFilters.minPrice));
+  if(activeFilters.maxPrice) results = results.filter(b => b.price <= Number(activeFilters.maxPrice));
+  if(activeFilters.minRating) results = results.filter(b => b.rating >= activeFilters.minRating);
+  if(activeFilters.sort==='price-asc') results.sort((a,b)=>a.price-b.price);
+  if(activeFilters.sort==='price-desc') results.sort((a,b)=>b.price-a.price);
+  if(activeFilters.sort==='rating') results.sort((a,b)=>b.rating-a.rating);
+
+  document.getElementById('resultCount').textContent = results.length + ' book' + (results.length===1?'':'s') + ' found';
+  document.getElementById('shopGrid').innerHTML = results.map(bookCardHtml).join('') || '<p class="muted">No books match those filters yet — try clearing a few.</p>';
+}
+document.getElementById('clearFiltersBtn').addEventListener('click', () => {
+  activeFilters = {categories:[], minPrice:null, maxPrice:null, minRating:0, search:'', sort:'relevance'};
+  document.getElementById('globalSearch').value = '';
+  renderShopView();
+});
+document.getElementById('priceMin').addEventListener('input', e => { activeFilters.minPrice = e.target.value; renderShopGrid(); });
+document.getElementById('priceMax').addEventListener('input', e => { activeFilters.maxPrice = e.target.value; renderShopGrid(); });
+document.getElementById('sortSelect').addEventListener('change', e => { activeFilters.sort = e.target.value; renderShopGrid(); });
+document.getElementById('globalSearch').addEventListener('input', e => {
+  activeFilters.search = e.target.value;
+  if(currentView !== 'shop') navigate('shop'); else renderShopGrid();
+});
+
+/* ============ RENDER: PRODUCT ============ */
+function viewProduct(bookId){
+  currentProductId = bookId;
+  state.viewHistory.push(bookId);
+  navigate('product', bookId);
+}
+let productQty = 1;
+function renderProductView(bookId){
+  const book = state.books.find(b => b.id === bookId);
+  const c = document.getElementById('productContainer');
+  if(!book){ c.innerHTML = '<p>Book not found.</p>'; return; }
+  productQty = 1;
+  const similar = getSimilarBooks(book);
+  const fbt = getFrequentlyBoughtTogether(book);
+  c.innerHTML =
+    '<div class="product-layout">' +
+      bookCoverHtml(book, 'product-cover') +
+      '<div>' +
+        '<div class="muted small">' + escapeHtml(book.category) + '</div>' +
+        '<h2 style="font-size:1.8rem; margin:6px 0 4px;">' + escapeHtml(book.title) + '</h2>' +
+        '<p class="muted">by ' + escapeHtml(book.author) + '</p>' +
+        '<p class="rating" style="margin:10px 0;">' + starString(book.rating) + ' <span class="muted small">' + book.rating + ' out of 5</span></p>' +
+        '<h3 style="font-size:1.6rem; margin-bottom:14px;">' + formatCurrency(book.price) + '</h3>' +
+        '<p style="max-width:60ch;">' + escapeHtml(book.description) + '</p>' +
+        '<div style="margin:14px 0;">' + (book.tags||[]).map(t=>'<span class="tag-chip">' + escapeHtml(t) + '</span>').join('') + '</div>' +
+        (book.stock===0 ? '<p class="stock-low">Currently out of stock</p>' :
+          '<div style="display:flex; align-items:center; gap:16px; margin:18px 0;">' +
+          '<div class="qty-stepper"><button onclick="changeProductQty(-1,' + book.stock + ')">−</button><span id="productQtyLabel">1</span><button onclick="changeProductQty(1,' + book.stock + ')">+</button></div>' +
+          '<button class="btn btn-primary" onclick="addToCart(\'' + book.id + '\', productQty)">Add to cart</button>' +
+          '</div><p class="muted small">' + book.stock + ' in stock</p>') +
+      '</div>' +
+    '</div>' +
+    (fbt.length ? '<div class="section-head" style="margin-top:48px;"><h3>Frequently bought together</h3></div><div class="book-grid">' + fbt.map(bookCardHtml).join('') + '</div>' : '') +
+    (similar.length ? '<div class="section-head" style="margin-top:36px;"><h3>You may also like</h3></div><div class="book-grid">' + similar.map(bookCardHtml).join('') + '</div>' : '');
+}
+function changeProductQty(delta, stock){
+  productQty = Math.max(1, Math.min(stock, productQty + delta));
+  document.getElementById('productQtyLabel').textContent = productQty;
+}
+
+/* ============ RENDER: CART ============ */
+function renderCartView(){
+  const {items, subtotal, shipping, tax, total} = getCartDetails();
+  const el = document.getElementById('cartContent');
+  if(!items.length){
+    el.innerHTML = '<div class="empty-state"><h3>Your cart is empty</h3><p>Find something worth reading.</p><button class="btn btn-primary" onclick="navigate(\'shop\')" style="margin-top:12px;">Browse books</button></div>';
+    return;
+  }
+  const lines = items.map(i =>
+    '<div class="cart-line">' + bookCoverHtml(i.book, 'mini-cover') +
+    '<div><div style="font-weight:600;">' + escapeHtml(i.book.title) + '</div><div class="muted small">' + escapeHtml(i.book.author) + '</div>' +
+    '<div class="qty-stepper" style="margin-top:8px;"><button onclick="setCartQty(\'' + i.bookId + '\',' + (i.qty-1) + ')">−</button><span>' + i.qty + '</span><button onclick="setCartQty(\'' + i.bookId + '\',' + (i.qty+1) + ')">+</button></div></div>' +
+    '<div style="font-weight:700;">' + formatCurrency(i.book.price*i.qty) + '</div>' +
+    '<button class="icon-action" onclick="setCartQty(\'' + i.bookId + '\',0)" aria-label="Remove">✕</button>' +
+    '</div>'
+  ).join('');
+  el.innerHTML =
+    '<div class="cart-layout"><div>' + lines + '</div>' +
+    '<div class="summary-card">' +
+      '<div class="summary-row"><span>Subtotal</span><span>' + formatCurrency(subtotal) + '</span></div>' +
+      '<div class="summary-row"><span>Shipping</span><span>' + (shipping ? formatCurrency(shipping) : 'Free') + '</span></div>' +
+      '<div class="summary-row"><span>Tax (5%)</span><span>' + formatCurrency(tax) + '</span></div>' +
+      '<div class="summary-row total"><span>Total</span><span>' + formatCurrency(total) + '</span></div>' +
+      '<button class="btn btn-primary btn-block" style="margin-top:14px;" onclick="goToCheckout()">Proceed to checkout</button>' +
+    '</div></div>';
+}
+function goToCheckout(){
+  if(!state.currentUser){ requireLogin('Log in to check out.'); return; }
+  if(!state.cart.length){ showToast('Your cart is empty.', 'error'); return; }
+  navigate('checkout');
+}
+
+/* ============ RENDER: CHECKOUT ============ */
+function startCheckout(){
+  checkoutStep = 1;
+  checkoutAddress = state.currentUser && state.currentUser.address ? {...state.currentUser.address} : null;
+  renderCheckoutStep();
+}
+function setCheckoutStepUI(){
+  [1,2,3].forEach(n => {
+    const el = document.getElementById('stepDot-' + n);
+    el.classList.toggle('active', n===checkoutStep);
+    el.classList.toggle('done', n<checkoutStep);
+  });
+}
+function renderCheckoutStep(){
+  setCheckoutStepUI();
+  const el = document.getElementById('checkoutContent');
+  const {subtotal, shipping, tax, total} = getCartDetails();
+  if(checkoutStep === 1){
+    const a = checkoutAddress || {};
+    el.innerHTML =
+      '<div class="field"><label>Full name</label><input type="text" id="addrName" value="' + escapeHtml(state.currentUser.name) + '"></div>' +
+      '<div class="field"><label>Address line</label><input type="text" id="addrLine1" value="' + escapeHtml(a.line1||'') + '"></div>' +
+      '<div class="form-grid">' +
+        '<div class="field"><label>City</label><input type="text" id="addrCity" value="' + escapeHtml(a.city||'') + '"></div>' +
+        '<div class="field"><label>State</label><input type="text" id="addrState" value="' + escapeHtml(a.state||'') + '"></div>' +
+      '</div>' +
+      '<div class="field" style="max-width:200px;"><label>PIN code</label><input type="text" id="addrPin" value="' + escapeHtml(a.pincode||'') + '"></div>' +
+      '<button class="btn btn-primary" onclick="submitAddress()">Continue to payment</button>';
+  } else if(checkoutStep === 2){
+    el.innerHTML =
+      '<p class="muted">Order total: <strong>' + formatCurrency(total) + '</strong></p>' +
+      '<div class="pay-methods" style="margin-top:14px;">' +
+        '<button class="pay-method selected" data-method="UPI" onclick="chooseCheckoutMethod(this,\'UPI\')">UPI</button>' +
+        '<button class="pay-method" data-method="Card" onclick="chooseCheckoutMethod(this,\'Card\')">Card</button>' +
+        '<button class="pay-method" data-method="COD" onclick="chooseCheckoutMethod(this,\'COD\')">Cash on delivery</button>' +
+      '</div>' +
+      '<span class="sandbox-badge" style="margin-top:16px;">Sandbox · Test mode payment</span>' +
+      '<div><button class="btn btn-primary" onclick="checkoutStep=3; renderCheckoutStep();">Review order</button></div>';
+    selectedPayMethod = 'UPI';
+  } else {
+    const {items} = getCartDetails();
+    el.innerHTML =
+      '<div class="cart-layout"><div>' +
+        items.map(i => '<div class="cart-line" style="grid-template-columns:64px 1fr auto;">' + bookCoverHtml(i.book,'mini-cover') + '<div>' + escapeHtml(i.book.title) + ' × ' + i.qty + '</div><div>' + formatCurrency(i.book.price*i.qty) + '</div></div>').join('') +
+        '<div class="field" style="margin-top:16px;"><label>Deliver to</label><p>' + escapeHtml(checkoutAddress.line1) + ', ' + escapeHtml(checkoutAddress.city) + ', ' + escapeHtml(checkoutAddress.state) + ' ' + escapeHtml(checkoutAddress.pincode) + '</p></div>' +
+        '<div class="field"><label>Payment method</label><p>' + selectedPayMethod + '</p></div>' +
+      '</div>' +
+      '<div class="summary-card">' +
+        '<div class="summary-row"><span>Subtotal</span><span>' + formatCurrency(subtotal) + '</span></div>' +
+        '<div class="summary-row"><span>Shipping</span><span>' + (shipping?formatCurrency(shipping):'Free') + '</span></div>' +
+        '<div class="summary-row"><span>Tax (5%)</span><span>' + formatCurrency(tax) + '</span></div>' +
+        '<div class="summary-row total"><span>Total</span><span>' + formatCurrency(total) + '</span></div>' +
+        '<button class="btn btn-primary btn-block" style="margin-top:14px;" onclick="openPaymentModal()">' + (selectedPayMethod==='COD' ? 'Place order' : 'Pay & place order') + '</button>' +
+      '</div></div>';
+  }
+}
+function submitAddress(){
+  const addr = {
+    line1: document.getElementById('addrLine1').value.trim(),
+    city: document.getElementById('addrCity').value.trim(),
+    state: document.getElementById('addrState').value.trim(),
+    pincode: document.getElementById('addrPin').value.trim()
+  };
+  if(!addr.line1 || !addr.city){ showToast('Please fill in your address.', 'error'); return; }
+  checkoutAddress = addr;
+  checkoutStep = 2;
+  renderCheckoutStep();
+}
+function chooseCheckoutMethod(btn, method){
+  document.querySelectorAll('#checkoutContent .pay-method').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  selectedPayMethod = method;
+}
+function openPaymentModal(){
+  if(selectedPayMethod === 'COD'){ finalizeOrder(); return; }
+  const {total} = getCartDetails();
+  document.getElementById('paymentAmount').textContent = formatCurrency(total);
+  renderPayMethodTabs();
+  openModal('paymentModal');
+}
+function renderPayMethodTabs(){
+  document.querySelectorAll('#payMethodTabs .pay-method').forEach(b => b.classList.toggle('selected', b.dataset.method===selectedPayMethod));
+  renderPayMethodBody();
+}
+function renderPayMethodBody(){
+  const body = document.getElementById('payMethodBody');
+  if(selectedPayMethod === 'UPI'){
+    body.innerHTML = '<div class="field"><label>UPI ID</label><input type="text" placeholder="yourname@upi"></div>';
+  } else if(selectedPayMethod === 'Card'){
+    body.innerHTML =
+      '<div class="field"><label>Card number</label><input type="text" placeholder="4111 1111 1111 1111" maxlength="19"></div>' +
+      '<div class="card-input-row"><div class="field"><label>Expiry</label><input type="text" placeholder="MM/YY" maxlength="5"></div>' +
+      '<div class="field"><label>CVV</label><input type="text" placeholder="123" maxlength="3"></div></div>';
+  } else {
+    body.innerHTML = '<p class="muted">Pay in cash when your order is delivered.</p>';
+  }
+}
+document.querySelectorAll('#payMethodTabs .pay-method').forEach(btn => {
+  btn.addEventListener('click', () => { selectedPayMethod = btn.dataset.method; renderPayMethodTabs(); });
+});
+function closePaymentModal(){ closeModal('paymentModal'); }
+document.getElementById('payNowBtn').addEventListener('click', async () => {
+  const btn = document.getElementById('payNowBtn');
+  btn.disabled = true; btn.textContent = 'Processing…';
+  await new Promise(r => setTimeout(r, 1100));
+  btn.disabled = false; btn.textContent = 'Pay Now';
+  closePaymentModal();
+  finalizeOrder();
+});
+async function finalizeOrder(){
+  const order = await createOrder(checkoutAddress, selectedPayMethod);
+  if(!order) return;
+  navigate('orders');
+  showToast('Order ' + order.id + ' placed successfully.', 'success');
+}
+
+/* ============ RENDER: ORDERS / PROFILE ============ */
+function renderOrdersView(){
+  const el = document.getElementById('ordersContent');
+  if(!state.currentUser){ el.innerHTML = '<div class="empty-state"><p>Log in to see your orders.</p><button class="btn btn-primary" onclick="openAuthModal(\'login\')" style="margin-top:10px;">Log in</button></div>'; return; }
+  const mine = state.orders.filter(o => o.userId === state.currentUser.id).slice().reverse();
+  if(!mine.length){ el.innerHTML = '<div class="empty-state"><p>No orders yet.</p><button class="btn btn-primary" onclick="navigate(\'shop\')" style="margin-top:10px;">Start shopping</button></div>'; return; }
+  el.innerHTML = '<table class="data-table"><thead><tr><th>Order</th><th>Date</th><th>Items</th><th>Total</th><th>Status</th><th></th></tr></thead><tbody>' +
+    mine.map(o => '<tr><td>' + o.id + '</td><td>' + formatDate(o.createdAt) + '</td><td>' + o.items.reduce((s,i)=>s+i.qty,0) + '</td><td>' + formatCurrency(o.total) + '</td><td><span class="status-pill status-' + o.status + '">' + o.status + '</span></td><td><button class="link-btn" onclick="openInvoice(\'' + o.id + '\')">Invoice</button></td></tr>').join('') +
+    '</tbody></table>';
+}
+function renderProfileView(){
+  const el = document.getElementById('profileContent');
+  if(!state.currentUser){ el.innerHTML = '<p>Log in to view your profile.</p>'; return; }
+  const u = state.currentUser;
+  const a = u.address || {};
+  el.innerHTML =
+    '<div class="field"><label>Full name</label><input type="text" id="profName" value="' + escapeHtml(u.name) + '"></div>' +
+    '<div class="field"><label>Email</label><input type="email" value="' + escapeHtml(u.email) + '" disabled></div>' +
+    '<div class="field"><label>Phone</label><input type="tel" id="profPhone" value="' + escapeHtml(u.phone||'') + '"></div>' +
+    '<div class="field"><label>Address line</label><input type="text" id="profLine1" value="' + escapeHtml(a.line1||'') + '"></div>' +
+    '<div class="form-grid">' +
+      '<div class="field"><label>City</label><input type="text" id="profCity" value="' + escapeHtml(a.city||'') + '"></div>' +
+      '<div class="field"><label>State</label><input type="text" id="profState" value="' + escapeHtml(a.state||'') + '"></div>' +
+    '</div>' +
+    '<div class="field" style="max-width:200px;"><label>PIN code</label><input type="text" id="profPin" value="' + escapeHtml(a.pincode||'') + '"></div>' +
+    '<button class="btn btn-primary" onclick="saveProfile()">Save changes</button>';
+}
+async function saveProfile(){
+  const u = state.currentUser;
+  u.name = document.getElementById('profName').value.trim() || u.name;
+  u.phone = document.getElementById('profPhone').value.trim();
+  u.address = {
+    line1: document.getElementById('profLine1').value.trim(),
+    city: document.getElementById('profCity').value.trim(),
+    state: document.getElementById('profState').value.trim(),
+    pincode: document.getElementById('profPin').value.trim()
+  };
+  await saveState();
+  renderAccountMenu();
+  showToast('Profile updated.', 'success');
+}
+
+/* ============ RENDER: ADMIN ============ */
+let adminTab = 'overview';
+function renderAdminShell(){
+  if(!state.currentUser || (state.currentUser.role !== 'admin' && state.currentUser.role !== 'seller')){
+    document.getElementById('adminTitle').textContent = 'Dashboard';
+    document.getElementById('adminNav').innerHTML = '';
+    document.getElementById('adminContent').innerHTML = '<div class="empty-state"><p>This area is for store admins and sellers.</p><button class="btn btn-primary" onclick="openAuthModal(\'login\')" style="margin-top:10px;">Log in</button></div>';
+    return;
+  }
+  const isAdmin = state.currentUser.role === 'admin';
+  document.getElementById('adminTitle').textContent = isAdmin ? 'Admin dashboard' : 'Seller dashboard';
+  const tabs = isAdmin ? ['overview','products','orders','customers'] : ['products','orders'];
+  if(!tabs.includes(adminTab)) adminTab = tabs[0];
+  document.getElementById('adminNav').innerHTML = tabs.map(t =>
+    '<button class="' + (adminTab===t?'active':'') + '" onclick="setAdminTab(\'' + t + '\')">' + t.charAt(0).toUpperCase()+t.slice(1) + '</button>'
+  ).join('');
+  renderAdminContent();
+}
+function setAdminTab(tab){ adminTab = tab; renderAdminShell(); }
+function renderAdminContent(){
+  const el = document.getElementById('adminContent');
+  if(adminTab === 'overview') renderAdminOverview(el);
+  else if(adminTab === 'products') renderAdminProducts(el);
+  else if(adminTab === 'orders') renderAdminOrders(el);
+  else if(adminTab === 'customers') renderAdminCustomers(el);
+}
+function renderAdminOverview(el){
+  const a = computeAnalytics();
+  el.innerHTML =
+    '<div class="stat-row">' +
+      '<div class="stat"><div class="num">' + formatCurrency(a.revenue) + '</div><div class="lbl">Total revenue</div></div>' +
+      '<div class="stat"><div class="num">' + a.orderCount + '</div><div class="lbl">Orders</div></div>' +
+      '<div class="stat"><div class="num">' + a.customerCount + '</div><div class="lbl">Customers</div></div>' +
+      '<div class="stat"><div class="num">' + formatCurrency(a.avgOrderValue) + '</div><div class="lbl">Avg. order value</div></div>' +
+    '</div>' +
+    '<div class="chart-grid">' +
+      '<div class="chart-card"><h4>Revenue, last 14 days</h4><canvas id="revenueChart" height="180"></canvas></div>' +
+      '<div class="chart-card"><h4>Top-selling books</h4><canvas id="topBooksChart" height="180"></canvas></div>' +
+      '<div class="chart-card"><h4>Revenue by category</h4><canvas id="categoryChart" height="180"></canvas></div>' +
+      '<div class="chart-card"><h4>Website traffic (sample analytics)</h4><canvas id="trafficChart" height="180"></canvas></div>' +
+    '</div>' +
+    '<p class="muted small">Traffic chart uses sample session data — connect Google Analytics or an equivalent tool for live figures (see README).</p>';
+  renderAnalyticsCharts();
+}
+function renderAdminProducts(el){
+  const rows = state.books.map(b =>
+    '<tr><td>' + escapeHtml(b.title) + '<div class="muted small">' + escapeHtml(b.author) + '</div></td>' +
+    '<td>' + escapeHtml(b.category) + '</td><td>' + formatCurrency(b.price) + '</td>' +
+    '<td class="' + (b.stock<=5?'low-stock':'') + '">' + b.stock + '</td>' +
+    '<td><button class="icon-action" onclick="openBookForm(\'' + b.id + '\')" aria-label="Edit">✎</button><button class="icon-action" onclick="deleteBook(\'' + b.id + '\')" aria-label="Delete">🗑</button></td></tr>'
+  ).join('');
+  el.innerHTML =
+    '<div class="admin-toolbar"><input type="text" id="newCategoryInput" placeholder="New category name" style="padding:8px 12px; border:1px solid var(--line); border-radius:6px;"><button class="btn btn-ghost btn-sm" onclick="addCategory()">Add category</button><button class="btn btn-primary btn-sm" onclick="openBookForm()">Add book</button></div>' +
+    '<table class="data-table"><thead><tr><th>Title</th><th>Category</th><th>Price</th><th>Stock</th><th></th></tr></thead><tbody>' + rows + '</tbody></table>' +
+    '<div id="bookFormWrap"></div>';
+}
+function addCategory(){
+  const input = document.getElementById('newCategoryInput');
+  const name = input.value.trim();
+  if(!name) return;
+  if(!state.categories.includes(name)){ state.categories.push(name); saveState(); showToast('Category added.', 'success'); }
+  input.value = '';
+  renderAdminProducts(document.getElementById('adminContent'));
+}
+function openBookForm(bookId){
+  const book = bookId ? state.books.find(b=>b.id===bookId) : null;
+  const wrap = document.getElementById('bookFormWrap');
+  wrap.innerHTML =
+    '<div class="overlay open"><div class="modal-box wide"><button class="modal-close" onclick="document.getElementById(\'bookFormWrap\').innerHTML=\'\'">✕</button>' +
+    '<h3 style="font-size:1.2rem;">' + (book?'Edit book':'Add book') + '</h3>' +
+    '<div class="form-grid">' +
+      '<div class="field"><label>Title</label><input type="text" id="fTitle" value="' + (book?escapeHtml(book.title):'') + '"></div>' +
+      '<div class="field"><label>Author</label><input type="text" id="fAuthor" value="' + (book?escapeHtml(book.author):'') + '"></div>' +
+      '<div class="field"><label>Category</label><select id="fCategory">' + state.categories.map(c=>'<option ' + (book&&book.category===c?'selected':'') + '>' + escapeHtml(c) + '</option>').join('') + '</select></div>' +
+      '<div class="field"><label>Price (₹)</label><input type="number" id="fPrice" value="' + (book?book.price:'') + '"></div>' +
+      '<div class="field"><label>Stock</label><input type="number" id="fStock" value="' + (book?book.stock:'') + '"></div>' +
+      '<div class="field"><label>Rating</label><input type="number" step="0.1" min="0" max="5" id="fRating" value="' + (book?book.rating:'4.0') + '"></div>' +
+    '</div>' +
+    '<div class="field"><label>Description</label><textarea id="fDescription">' + (book?escapeHtml(book.description):'') + '</textarea>' +
+    '<button class="link-btn" style="margin-top:6px;" onclick="aiFillDescription()">Generate with AI</button></div>' +
+    '<label class="filter-opt"><input type="checkbox" id="fBestseller" ' + (book&&book.bestseller?'checked':'') + '> Mark as bestseller</label>' +
+    '<label class="filter-opt"><input type="checkbox" id="fFeatured" ' + (book&&book.featured?'checked':'') + '> Show as featured</label>' +
+    '<button class="btn btn-primary btn-block" style="margin-top:14px;" onclick="saveBookForm(' + (book?"'"+book.id+"'":'null') + ')">Save book</button>' +
+    '</div></div>';
+}
+function aiFillDescription(){
+  const title = document.getElementById('fTitle').value.trim() || 'This book';
+  const author = document.getElementById('fAuthor').value.trim() || 'the author';
+  const category = document.getElementById('fCategory').value;
+  document.getElementById('fDescription').value = generateDescription(title, author, category);
+  showToast('AI-drafted description added — review before publishing.');
+}
+async function saveBookForm(bookId){
+  const data = {
+    title: document.getElementById('fTitle').value.trim(),
+    author: document.getElementById('fAuthor').value.trim(),
+    category: document.getElementById('fCategory').value,
+    price: Number(document.getElementById('fPrice').value) || 0,
+    stock: Number(document.getElementById('fStock').value) || 0,
+    rating: Number(document.getElementById('fRating').value) || 4.0,
+    description: document.getElementById('fDescription').value.trim(),
+    bestseller: document.getElementById('fBestseller').checked,
+    featured: document.getElementById('fFeatured').checked
+  };
+  if(!data.title || !data.author){ showToast('Title and author are required.', 'error'); return; }
+  if(bookId){
+    Object.assign(state.books.find(b=>b.id===bookId), data);
+  } else {
+    state.books.push({id: uid('b'), tags:[], ...data});
+  }
+  await saveState();
+  document.getElementById('bookFormWrap').innerHTML = '';
+  renderAdminProducts(document.getElementById('adminContent'));
+  showToast('Book saved.', 'success');
+}
+function deleteBook(bookId){
+  if(!confirm('Remove this book from the catalog?')) return;
+  state.books = state.books.filter(b => b.id !== bookId);
+  saveState();
+  renderAdminProducts(document.getElementById('adminContent'));
+}
+function renderAdminOrders(el){
+  const rows = state.orders.slice().reverse().map(o => {
+    const user = state.users.find(u=>u.id===o.userId) || {};
+    return '<tr><td>' + o.id + '</td><td>' + escapeHtml(user.name||'—') + '</td><td>' + formatDate(o.createdAt) + '</td><td>' + formatCurrency(o.total) + '</td>' +
+      '<td><select onchange="updateOrderStatus(\'' + o.id + '\', this.value)">' + ['Placed','Shipped','Delivered','Cancelled'].map(s=>'<option ' + (o.status===s?'selected':'') + '>' + s + '</option>').join('') + '</select></td>' +
+      '<td><button class="link-btn" onclick="openInvoice(\'' + o.id + '\')">Invoice</button></td></tr>';
+  }).join('');
+  el.innerHTML = '<table class="data-table"><thead><tr><th>Order</th><th>Customer</th><th>Date</th><th>Total</th><th>Status</th><th></th></tr></thead><tbody>' + rows + '</tbody></table>';
+}
+function renderAdminCustomers(el){
+  const customers = state.users.filter(u => u.role === 'customer');
+  const rows = customers.map(u => {
+    const orders = state.orders.filter(o => o.userId === u.id);
+    return '<tr><td>' + escapeHtml(u.name) + '</td><td>' + escapeHtml(u.email) + '</td><td>' + formatDate(u.createdAt) + '</td><td>' + orders.length + '</td></tr>';
+  }).join('');
+  el.innerHTML = '<table class="data-table"><thead><tr><th>Name</th><th>Email</th><th>Joined</th><th>Orders</th></tr></thead><tbody>' + rows + '</tbody></table>';
+}
+
+/* ============ EVENT WIRING ============ */
+document.querySelectorAll('[data-nav]').forEach(btn => btn.addEventListener('click', () => navigate(btn.dataset.nav)));
+document.getElementById('cartIconBtn').addEventListener('click', () => navigate('cart'));
+document.getElementById('heroBestsellerBtn').addEventListener('click', () => { activeFilters.categories=[]; activeFilters.sort='rating'; navigate('shop'); });
+document.getElementById('hamburgerBtn').addEventListener('click', () => document.getElementById('mobileNav').classList.toggle('open'));
+document.querySelectorAll('.auth-tabs button').forEach(btn => btn.addEventListener('click', () => openAuthModal(btn.dataset.tab)));
+document.getElementById('loginForm').addEventListener('submit', e => {
+  e.preventDefault();
+  handleLogin(document.getElementById('loginEmail').value, document.getElementById('loginPassword').value);
+});
+document.getElementById('registerForm').addEventListener('submit', e => {
+  e.preventDefault();
+  handleRegister(document.getElementById('regName').value.trim(), document.getElementById('regEmail').value, document.getElementById('regPhone').value.trim(), document.getElementById('regPassword').value);
+});
+
+/* ============ INIT ============ */
+async function initApp(){
+  const loaded = await loadState();
+  if(!loaded){
+    state.books = JSON.parse(JSON.stringify(SEED_BOOKS));
+    state.categories = SEED_CATEGORIES.slice();
+    state.users = [];
+    state.orders = [];
+    await seedDemoAccountsAndOrders();
+    await saveState();
+  }
+  renderAccountMenu();
+  updateCartBadge();
+  initChatWidget();
+  navigate('home');
+}
+initApp();
+</script>
+</body>
+</html>
